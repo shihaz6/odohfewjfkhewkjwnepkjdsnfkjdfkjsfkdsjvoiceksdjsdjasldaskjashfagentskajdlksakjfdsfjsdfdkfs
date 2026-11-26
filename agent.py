@@ -6,6 +6,7 @@ The company facts in knowledge/ are inserted into the prompt in prompts/ at star
 
 import json
 import logging
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,7 +24,7 @@ from livekit.agents import (
     room_io,
 )
 from livekit.agents.beta import EndCallTool
-from livekit.plugins import groq, noise_cancellation, silero
+from livekit.plugins import azure, groq, noise_cancellation, silero
 
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT / ".env.local")
@@ -34,11 +35,21 @@ CALLBACKS_FILE = ROOT / "data" / "callbacks.jsonl"
 
 AGENT_NAME = "alchemyx-alex"
 
-GREETING ="Hi, thanks for calling AlchemyX Global, this is Alex. How can I help you today?"
+# "en" (default) or "si". Sinhala uses Groq Whisper for speech in and Azure for speech out.
+LANGUAGE = os.getenv("ALEX_LANGUAGE", "en").strip().lower()
+SINHALA_VOICE = "si-LK-ThiliniNeural"
+
+GREETINGS = {
+    "en": "Hi, thanks for calling AlchemyX Global, this is Alex. How can I help you today?",
+    "si": "ආයුබෝවන්, AlchemyX Global වෙතින් කතා කරන්නේ Alex. අද මම ඔබට උදව් කළ හැක්කේ කෙසේද?",
+}
+if LANGUAGE not in GREETINGS:
+    raise ValueError(f"ALEX_LANGUAGE must be one of {sorted(GREETINGS)}, not {LANGUAGE!r}")
 
 # Returned by end_call: the model speaks these final words, then the call is hung up.
 END_INSTRUCTIONS = (
-    "The call is ending now. Say your final words in at most two sentences: if you saved a "
+    "The call is ending now. Say your final words, in the caller's language, in at most two "
+    "sentences: if you saved a "
     "callback request on this call, first repeat it back in one natural sentence (who, what "
     "they need, and for which business); then thank them for calling AlchemyX Global and "
     "say goodbye. A bare \"You're welcome, goodbye\" is not enough."
@@ -70,6 +81,24 @@ def build_instructions(caller_number: str | None = None) -> str:
 def build_llm(**overrides) -> groq.LLM:
     # Low reasoning effort keeps the time to first word short on a call.
     return groq.LLM(model="openai/gpt-oss-120b", reasoning_effort="low", **overrides)
+
+
+def build_stt(language: str = LANGUAGE):
+    if language == "si":
+        # Whisper with the Sinhala code instead of the default English.
+        return groq.STT(model="whisper-large-v3-turbo", language="si")
+    return groq.STT(model="whisper-large-v3-turbo")
+
+
+def build_tts(language: str = LANGUAGE):
+    if language == "si":
+        # Groq's Orpheus voice is English-only, so Sinhala speech comes from Azure.
+        if not os.getenv("AZURE_SPEECH_KEY") or not os.getenv("AZURE_SPEECH_REGION"):
+            raise RuntimeError(
+                "ALEX_LANGUAGE=si needs AZURE_SPEECH_KEY and AZURE_SPEECH_REGION in .env.local"
+            )
+        return azure.TTS(voice=SINHALA_VOICE, language="si-LK")
+    return groq.TTS()
 
 
 def normalize_phone(phone_number: str) -> str | None:
@@ -191,9 +220,9 @@ def find_caller_number(room) -> str | None:
 async def entrypoint(ctx: agents.JobContext):
     alex = Alex()
     session = AgentSession(
-        stt=groq.STT(model="whisper-large-v3-turbo"),
+        stt=build_stt(),
         llm=build_llm(),
-        tts=groq.TTS(),
+        tts=build_tts(),
         vad=silero.VAD.load(),
         # Pinned to the local model. Left on auto, it uses LiveKit Inference's
         # hosted "v1" model in console/dev mode or when deployed to LiveKit Cloud.
@@ -216,7 +245,7 @@ async def entrypoint(ctx: agents.JobContext):
         await alex.update_instructions(build_instructions(caller_number))
 
     # Fixed greeting: no LLM round trip, and always names AlchemyX Global.
-    session.say(GREETING)
+    session.say(GREETINGS[LANGUAGE])
 
 
 if __name__ == "__main__":
