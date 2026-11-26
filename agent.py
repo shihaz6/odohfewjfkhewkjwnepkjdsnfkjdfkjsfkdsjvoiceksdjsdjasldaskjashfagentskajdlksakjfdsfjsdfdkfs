@@ -105,6 +105,13 @@ def build_llm(**overrides) -> groq.LLM:
 
 def build_stt(language: str = LANGUAGE):
     if language == "si":
+        # ALEX_STT=azure uses Azure Speech for Sinhala listening; the default is Groq Whisper.
+        if os.getenv("ALEX_STT", "groq").strip().lower() == "azure":
+            if not os.getenv("AZURE_SPEECH_KEY") or not os.getenv("AZURE_SPEECH_REGION"):
+                raise RuntimeError(
+                    "ALEX_STT=azure needs AZURE_SPEECH_KEY and AZURE_SPEECH_REGION in .env.local"
+                )
+            return azure.STT(language=["si-LK"])
         # Whisper with the Sinhala code instead of the default English.
         return groq.STT(model="whisper-large-v3-turbo", language="si")
     return groq.STT(model="whisper-large-v3-turbo")
