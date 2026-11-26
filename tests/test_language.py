@@ -52,11 +52,13 @@ def test_english_mode_never_asks_for_sinhala_replies(monkeypatch):
     assert "{language_rule}" not in text
 
 
-def test_sinhala_mode_replies_in_the_callers_language(monkeypatch):
+def test_sinhala_mode_replies_in_sinhala_only(monkeypatch):
     monkeypatch.setattr(agent, "LANGUAGE", "si")
     text = agent.build_instructions()
-    assert "Reply in the language the caller speaks" in text
+    assert "Always reply in Sinhala only" in text
+    assert agent.LANGUAGE_RULES["si"] in text
     assert "Always reply in English" not in text
+    assert "{language_rule}" not in text
 
 
 def test_unknown_language_stops_the_worker_at_startup():
