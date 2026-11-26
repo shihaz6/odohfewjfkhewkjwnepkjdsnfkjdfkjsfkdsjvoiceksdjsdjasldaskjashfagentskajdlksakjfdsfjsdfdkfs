@@ -19,14 +19,21 @@ def test_sinhala_speech_in_uses_the_sinhala_code():
     assert agent.build_stt("si")._opts.languages == ["si"]
 
 
-def test_sinhala_speech_out_needs_azure_keys(monkeypatch):
+def test_sinhala_speech_out_defaults_to_the_free_dilu_voice(monkeypatch):
+    monkeypatch.delenv("ALEX_TTS", raising=False)
+    assert type(agent.build_tts("si")).__name__ == "DiluTTS"
+
+
+def test_sinhala_speech_out_azure_needs_azure_keys(monkeypatch):
+    monkeypatch.setenv("ALEX_TTS", "azure")
     monkeypatch.delenv("AZURE_SPEECH_KEY", raising=False)
     monkeypatch.delenv("AZURE_SPEECH_REGION", raising=False)
     with pytest.raises(RuntimeError, match="AZURE_SPEECH_KEY"):
         agent.build_tts("si")
 
 
-def test_sinhala_speech_out_builds_with_azure_keys(monkeypatch):
+def test_sinhala_speech_out_builds_azure_with_keys(monkeypatch):
+    monkeypatch.setenv("ALEX_TTS", "azure")
     monkeypatch.setenv("AZURE_SPEECH_KEY", "test-key")
     monkeypatch.setenv("AZURE_SPEECH_REGION", "southindia")
     tts = agent.build_tts("si")
