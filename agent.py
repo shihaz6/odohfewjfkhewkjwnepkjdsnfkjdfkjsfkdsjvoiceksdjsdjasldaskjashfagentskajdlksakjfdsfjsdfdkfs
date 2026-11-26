@@ -58,11 +58,27 @@ END_INSTRUCTIONS = (
 logger = logging.getLogger("alex")
 
 
+LANGUAGE_RULES = {
+    "en": (
+        "- Always reply in English, even if the caller speaks another language. If you can't "
+        "understand them, ask them to repeat in English."
+    ),
+    "si": (
+        "- Reply in the language the caller speaks. If they speak Sinhala, answer in Sinhala; if "
+        "they speak English, answer in English. Switch if they switch. Keep brand names as "
+        "written: AlchemyX Global, Catalyst.\n"
+        "- The company facts below are in English. When you answer in Sinhala, translate them "
+        "naturally. Translating never adds a fact, number or promise that is not in the facts."
+    ),
+}
+
+
 def build_instructions(caller_number: str | None = None) -> str:
     facts = KNOWLEDGE_FILE.read_text(encoding="utf-8")
     prompt = PROMPT_FILE.read_text(encoding="utf-8")
     # str.replace, not str.format, so braces in the facts can't break the prompt.
-    text = prompt.replace("{knowledge}", facts)
+    text = prompt.replace("{language_rule}", LANGUAGE_RULES[LANGUAGE])
+    text = text.replace("{knowledge}", facts)
     if caller_number:
         text += (
             "\n\nCALLER\n"
