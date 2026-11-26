@@ -26,6 +26,8 @@ from livekit.agents import (
 from livekit.agents.beta import EndCallTool
 from livekit.plugins import azure, groq, noise_cancellation, silero
 
+from dilu_tts import DiluTTS
+
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT / ".env.local")
 
@@ -108,12 +110,15 @@ def build_stt(language: str = LANGUAGE):
 
 def build_tts(language: str = LANGUAGE):
     if language == "si":
-        # Groq's Orpheus voice is English-only, so Sinhala speech comes from Azure.
-        if not os.getenv("AZURE_SPEECH_KEY") or not os.getenv("AZURE_SPEECH_REGION"):
-            raise RuntimeError(
-                "ALEX_LANGUAGE=si needs AZURE_SPEECH_KEY and AZURE_SPEECH_REGION in .env.local"
-            )
-        return azure.TTS(voice=SINHALA_VOICE, language="si-LK")
+        # Groq's Orpheus voice is English-only. Sinhala speech is free and local (Dilu) by
+        # default; set ALEX_TTS=azure to use Azure Speech instead.
+        if os.getenv("ALEX_TTS", "dilu").strip().lower() == "azure":
+            if not os.getenv("AZURE_SPEECH_KEY") or not os.getenv("AZURE_SPEECH_REGION"):
+                raise RuntimeError(
+                    "ALEX_TTS=azure needs AZURE_SPEECH_KEY and AZURE_SPEECH_REGION in .env.local"
+                )
+            return azure.TTS(voice=SINHALA_VOICE, language="si-LK")
+        return DiluTTS()
     return groq.TTS()
 
 
