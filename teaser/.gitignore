@@ -1,0 +1,6 @@
+node_modules/
+out/
+
+# Generated audio, rebuilt by the npm audio scripts
+public/*.wav
+public/**/*.wav

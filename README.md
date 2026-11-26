@@ -23,6 +23,10 @@ text-to-speech (Orpheus). Voice detection and turn detection run locally.
 - [`docs/decisions.md`](docs/decisions.md): design decisions and why, grouped as major, medium and minor
 - [`docs/limitations.md`](docs/limitations.md): what Alex can't do yet and the known risks, with fixes
 
+## Teaser video
+
+[`teaser/`](teaser/README.md) holds a Remotion project for the *Resonance by AlchemyX Global* teaser, in landscape and portrait.
+
 ## Setup (Windows)
 
 Requires Python 3.10–3.13 (3.15 is not yet supported by `livekit-blingfire`).

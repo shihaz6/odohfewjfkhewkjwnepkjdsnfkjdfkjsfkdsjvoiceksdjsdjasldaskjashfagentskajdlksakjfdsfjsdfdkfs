@@ -1,0 +1,32 @@
+{
+  "name": "resonance-teaser",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Teaser video for Resonance by AlchemyX Global (Remotion)",
+  "scripts": {
+    "studio": "remotion studio",
+    "audio": "node scripts/make-audio.mjs",
+    "render:landscape": "remotion render Resonance-Landscape out/resonance-teaser-landscape.mp4",
+    "render:portrait": "remotion render Resonance-Portrait out/resonance-teaser-portrait.mp4",
+    "render": "npm run audio && npm run render:landscape && npm run render:portrait",
+    "audio:v2": "node scripts/make-audio-v2.mjs",
+    "render:v2:landscape": "remotion render Resonance-V2-Landscape out/v2/resonance-teaser-v2-landscape.mp4",
+    "render:v2:portrait": "remotion render Resonance-V2-Portrait out/v2/resonance-teaser-v2-portrait.mp4",
+    "render:v2": "npm run audio:v2 && npm run render:v2:landscape && npm run render:v2:portrait",
+    "audio:v3": "node scripts/cut-song-v3.mjs",
+    "render:v3": "npm run audio:v3 && remotion render Resonance-V3-Portrait out/v3/resonance-teaser-v3-portrait.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.544",
+    "@remotion/fonts": "4.0.544",
+    "@remotion/media-utils": "4.0.544",
+    "@remotion/noise": "4.0.544",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.544"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  }
+}
