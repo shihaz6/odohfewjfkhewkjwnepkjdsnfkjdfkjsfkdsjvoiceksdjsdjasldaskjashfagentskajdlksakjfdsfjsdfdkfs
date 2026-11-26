@@ -66,11 +66,13 @@ LANGUAGE_RULES = {
         "understand them, ask them to repeat in English."
     ),
     "si": (
-        "- Reply in the language the caller speaks. If they speak Sinhala, answer in Sinhala; if "
-        "they speak English, answer in English. Switch if they switch. Keep brand names as "
-        "written: AlchemyX Global, Catalyst.\n"
-        "- The company facts below are in English. When you answer in Sinhala, translate them "
-        "naturally. Translating never adds a fact, number or promise that is not in the facts."
+        "- Always reply in Sinhala only, in Sinhala script, with no English words or sentences, "
+        "even if the caller speaks English. Write brand names in Sinhala letters, every time: "
+        "AlchemyX Global is ඇල්කෙමික්ස් "
+        "ග්ලෝබල්, Catalyst is කැටලිස්ට්, "
+        "Alex is ඇලෙක්ස්.\n"
+        "- The company facts below are in English. Translate them naturally into Sinhala. "
+        "Translating never adds a fact, number or promise that is not in the facts."
     ),
 }
 
