@@ -11,5 +11,6 @@ livekit-plugins-silero==1.8.12
 livekit-plugins-turn-detector==1.8.12
 livekit-protocol==1.1.32
 pytest==9.2.0
+piper-tts==1.8.0
 pytest-asyncio==1.5.0
 python-dotenv==1.2.4
