@@ -49,10 +49,22 @@ detection and turn detection run inside the worker, so they cost no LiveKit Infe
 |---|---|---|
 | Noise cancellation | `noise_cancellation.BVCTelephony()` | Tuned for phone audio |
 | Voice activity detection | `silero.VAD` | Local; detects when someone is speaking |
-| Speech to text | `groq.STT(model="whisper-large-v3-turbo")` | English |
+| Speech to text | `groq.STT(model="whisper-large-v3-turbo")` | English by default; `language="si"` when `ALEX_LANGUAGE=si` (see `build_stt()`) |
 | Turn detection | `inference.TurnDetector(version="v1-mini")` | Pinned to the local model (see decisions) |
 | LLM | `groq.LLM(model="openai/gpt-oss-120b", reasoning_effort="low")` | Built by `build_llm()`, which the tests reuse |
-| Text to speech | `groq.TTS()` (Orpheus `canopylabs/orpheus-v1-english`) | English only; terms accepted in the Groq console |
+| Text to speech | `groq.TTS()` (Orpheus `canopylabs/orpheus-v1-english`) by default; `azure.TTS(voice="si-LK-ThiliniNeural")` when `ALEX_LANGUAGE=si` (see `build_tts()`) | Orpheus is English only; terms accepted in the Groq console. Azure needs `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION` |
+
+### Sinhala mode
+
+`ALEX_LANGUAGE=si` switches the agent to Sinhala. `en` (the default) leaves everything as it was.
+
+- **Speech in:** Whisper, with the Sinhala code. Same Groq key.
+- **Speech out:** Azure Speech, Sinhala (`si-LK`) neural voice. A separate Azure account is needed.
+- **Greeting:** the Sinhala greeting in `GREETINGS["si"]`.
+- **Language of replies:** the prompt tells the LLM to answer in the caller's language. The fact
+  sheet stays in English and is translated on the fly.
+- **Startup checks:** an unknown `ALEX_LANGUAGE`, or a missing Azure key, stops the worker with a
+  clear error instead of running in English.
 
 ## Lifecycle of a call
 
