@@ -3,6 +3,7 @@ livekit-agents==1.8.12
 livekit-api==1.2.3
 livekit-blingfire==1.2.0
 livekit-local-inference==0.3.1
+livekit-plugins-azure==1.8.12
 livekit-plugins-groq==1.8.12
 livekit-plugins-noise-cancellation==0.3.3
 livekit-plugins-openai==1.8.12
