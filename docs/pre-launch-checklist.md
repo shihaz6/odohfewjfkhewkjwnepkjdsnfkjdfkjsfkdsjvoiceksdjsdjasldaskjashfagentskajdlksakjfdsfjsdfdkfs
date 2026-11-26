@@ -1,0 +1,32 @@
+# Pre-launch checklist
+
+The steps that must be done before Alex takes calls from real callers. Each one maps to an
+item in [`limitations.md`](limitations.md). Tick a box once it is done and verified.
+
+## Must do before a public phone number
+
+- [ ] **L5. Rotate the exposed keys.** Rotate the LiveKit API key and secret and the Groq key,
+  then:
+  - update `.env.local`;
+  - run `lk agent update --secrets GROQ_API_KEY=...` (with the new key);
+  - remove the stale `lk` CLI project entry, whose key returns 401.
+- [ ] **L4. Recording disclosure.** Sign in with `lk cloud auth` and check whether agent
+  observability (transcripts and audio) is on. If it is on, add a short notice to `GREETING` in
+  `agent.py` and decide how long recordings are kept. Sri Lanka's Personal Data Protection Act
+  applies.
+- [ ] **L3. Durable callback store.** `save_callback()` writes to the container's temporary
+  filesystem, so requests are lost on redeploy. Choose a destination (a Google Sheet, a CRM, or
+  a WhatsApp or email alert), then replace `save_callback()` with it. Decide the destination
+  first; it is a business choice.
+- [ ] **L2. Phone number.** Buy a SIP trunk or a LiveKit phone number, then add a dispatch rule
+  that names `alchemyx-alex` (see decision M4).
+- [ ] **L1. Fallback providers.** Move Groq to a paid tier, and add `llm.FallbackAdapter` (and
+  STT/TTS fallbacks) with a second provider, so a Groq outage does not leave the caller in
+  silence.
+
+## Check after each release
+
+- [ ] `.\.venv\Scripts\python.exe -m pytest tests -v` passes (uses Groq quota; run at a quiet time).
+- [ ] `docker build` excludes `.env.*`, `docs/`, `teaser/`, `tests/` and `*.mp3`.
+- [ ] `lk agent deploy --yes`, then `lk agent status` shows the new version running.
+- [ ] One test call in the Agents Playground: greeting, one question, a callback, and goodbye.

@@ -22,6 +22,7 @@ text-to-speech (Orpheus). Voice detection and turn detection run locally.
 - [`docs/architecture.md`](docs/architecture.md): components, the voice pipeline, how a call flows, tools, deployment and testing
 - [`docs/decisions.md`](docs/decisions.md): design decisions and why, grouped as major, medium and minor
 - [`docs/limitations.md`](docs/limitations.md): what Alex can't do yet and the known risks, with fixes
+- [`docs/pre-launch-checklist.md`](docs/pre-launch-checklist.md): the steps to finish before Alex takes real calls
 
 ## Teaser video
 
