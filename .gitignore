@@ -5,3 +5,5 @@ __pycache__/
 .env.local
 KMS/
 data/
+# Voice model files (about 63 MB each), downloaded separately
+models/
