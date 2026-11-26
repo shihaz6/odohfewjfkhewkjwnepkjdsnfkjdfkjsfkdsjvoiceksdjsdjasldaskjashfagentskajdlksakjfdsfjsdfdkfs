@@ -38,6 +38,20 @@ def test_every_language_has_a_greeting():
     assert "AlchemyX Global" in agent.GREETINGS["si"]
 
 
+def test_english_mode_never_asks_for_sinhala_replies(monkeypatch):
+    monkeypatch.setattr(agent, "LANGUAGE", "en")
+    text = agent.build_instructions()
+    assert "Always reply in English" in text
+    assert "{language_rule}" not in text
+
+
+def test_sinhala_mode_replies_in_the_callers_language(monkeypatch):
+    monkeypatch.setattr(agent, "LANGUAGE", "si")
+    text = agent.build_instructions()
+    assert "Reply in the language the caller speaks" in text
+    assert "Always reply in English" not in text
+
+
 def test_unknown_language_stops_the_worker_at_startup():
     root = Path(agent.ROOT)
     env = {**os.environ, "ALEX_LANGUAGE": "sinhala"}
