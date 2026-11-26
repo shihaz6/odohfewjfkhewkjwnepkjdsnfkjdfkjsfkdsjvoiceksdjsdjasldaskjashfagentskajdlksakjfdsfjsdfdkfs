@@ -49,8 +49,11 @@ coverage/
 .vscode/
 .DS_Store
 
-# Project docs and misc
+# Project docs, marketing video and misc
 README.md
+docs/
+teaser/
+*.mp3
 CONTRIBUTING.md
 LICENSE
 

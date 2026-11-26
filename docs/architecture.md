@@ -126,7 +126,7 @@ not to end the call when the caller says "hold on" or says thanks but is still a
 | Project | `voice-agent-z73y1dl4` |
 | Secrets | `GROQ_API_KEY` stored as a LiveKit Cloud secret; the LiveKit credentials are injected by the platform |
 | Image | `Dockerfile`: Python 3.12, `pip install -r requirements.txt`, `download-files`, `CMD python agent.py start` |
-| Excluded from image | `.env.*`, `tests/`, `.venv/`, `data/`, `KMS/` |
+| Excluded from image | `.env.*`, `tests/`, `.venv/`, `data/`, `KMS/`, `docs/`, `teaser/`, `*.mp3` |
 
 Deploy and check a release (`lk` is not on PATH; see the README for its location):
 
