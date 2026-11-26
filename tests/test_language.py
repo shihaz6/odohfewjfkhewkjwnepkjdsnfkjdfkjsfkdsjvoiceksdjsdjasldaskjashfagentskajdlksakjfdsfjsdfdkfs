@@ -19,6 +19,27 @@ def test_sinhala_speech_in_uses_the_sinhala_code():
     assert agent.build_stt("si")._opts.languages == ["si"]
 
 
+def test_sinhala_speech_in_defaults_to_groq(monkeypatch):
+    monkeypatch.delenv("ALEX_STT", raising=False)
+    assert "groq" in type(agent.build_stt("si")).__module__
+
+
+def test_sinhala_speech_in_azure_needs_azure_keys(monkeypatch):
+    monkeypatch.setenv("ALEX_STT", "azure")
+    monkeypatch.delenv("AZURE_SPEECH_KEY", raising=False)
+    monkeypatch.delenv("AZURE_SPEECH_REGION", raising=False)
+    with pytest.raises(RuntimeError, match="ALEX_STT=azure"):
+        agent.build_stt("si")
+
+
+def test_sinhala_speech_in_azure_needs_region_too(monkeypatch):
+    monkeypatch.setenv("ALEX_STT", "azure")
+    monkeypatch.setenv("AZURE_SPEECH_KEY", "test-key")
+    monkeypatch.delenv("AZURE_SPEECH_REGION", raising=False)
+    with pytest.raises(RuntimeError, match="AZURE_SPEECH_REGION"):
+        agent.build_stt("si")
+
+
 def test_sinhala_speech_out_defaults_to_the_free_dilu_voice(monkeypatch):
     monkeypatch.delenv("ALEX_TTS", raising=False)
     assert type(agent.build_tts("si")).__name__ == "DiluTTS"
