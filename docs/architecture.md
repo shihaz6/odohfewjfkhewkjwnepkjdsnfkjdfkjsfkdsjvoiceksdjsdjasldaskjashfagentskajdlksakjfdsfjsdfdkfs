@@ -59,12 +59,17 @@ detection and turn detection run inside the worker, so they cost no LiveKit Infe
 `ALEX_LANGUAGE=si` switches the agent to Sinhala. `en` (the default) leaves everything as it was.
 
 - **Speech in:** Whisper, with the Sinhala code. Same Groq key.
-- **Speech out:** Azure Speech, Sinhala (`si-LK`) neural voice. A separate Azure account is needed.
+- **Speech out:** Dilu, a free local Piper voice (`dilu_tts.py`, model in `models/`, MIT licence).
+  No key or quota. Set `ALEX_TTS=azure` to use Azure Speech (`si-LK` voice) instead, which needs
+  its own account and keys.
 - **Greeting:** the Sinhala greeting in `GREETINGS["si"]`.
 - **Language of replies:** the prompt tells the LLM to answer in the caller's language. The fact
   sheet stays in English and is translated on the fly.
-- **Startup checks:** an unknown `ALEX_LANGUAGE`, or a missing Azure key, stops the worker with a
-  clear error instead of running in English.
+- **Startup checks:** an unknown `ALEX_LANGUAGE`, or `ALEX_TTS=azure` without its keys, stops the
+  worker with a clear error instead of running in English. A missing Dilu model file raises an
+  error that says where to put it.
+- **Deployment:** the Dilu model is not in git and is not in the LiveKit Cloud image yet. Cloud
+  deploys in Sinhala mode need a download step added to the Dockerfile first.
 
 ## Lifecycle of a call
 
